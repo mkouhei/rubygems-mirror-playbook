@@ -1,0 +1,4 @@
+---
+- from: http://production.s3.rubygems.org
+  to:   /var/lib/gems-mirror
+  parallelism: 10

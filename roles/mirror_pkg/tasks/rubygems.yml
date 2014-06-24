@@ -1,0 +1,61 @@
+---
+- name: be sure packages are prepared
+  apt: name={{ item }} state=latest
+  with_items:
+    - rubygems-integration
+    - ruby
+    - rake
+    - ruby-hoe
+    - ruby-net-http-persistent
+  tags:
+    - packages
+    - gems
+
+- name: be sure package prepared
+  copy: src=rubygems-mirror_1.0.0+git~5235fbc-1_all.deb dest=/tmp/
+  tags:
+    - gems
+    - package
+
+- name: be sure package is installed
+  command: dpkg -i /tmp/rubygems-mirror_1.0.0+git~5235fbc-1_all.deb
+  tags:
+    - gems
+    - package
+
+- name: be sure directories are prepared
+  file: path={{ item }} owner={{ mirror_user }} group={{ mirror_group }} mode=0755 state=directory
+  with_items:
+    - /var/lib/gems-mirror
+    - /var/log/gems-mirror
+    - /home/{{ mirror_user }}/.gem
+  tags:
+    - gems
+
+- name: be sure rubygems-mirror script is distributed
+  copy: src={{ item }} dest=/var/lib/gems-mirror/{{ item }} owner={{ mirror_user }} group={{ mirror_group }} mode=0755
+  with_items:
+    - retrieve_meta.sh
+    - retrieve_gemspec.rb
+  tags:
+    - gems
+
+- name: be sure rubygems-mirror is configured
+  copy: src={{ item }} dest=/home/{{ mirror_user }}/.gem/.mirrorrc owner={{ mirror_user }} group={{ mirror_group }} mode=0644
+  with_items:
+    - .mirrorrc
+  tags:
+    - gems
+    - configuration
+
+- name: symlink of debian dists for publish
+  file: src=/var/lib/gems-mirror dest=/var/www/gems-mirror state=link force=yes
+  tags:
+    - gems
+
+- name: be sure gems-mirror log rotation is configured
+  template: src={{ item }}.j2 dest=/etc/logrotate.d/{{ item }}
+  with_items:
+    - gems-mirror
+  tags:
+    - gems

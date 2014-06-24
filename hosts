@@ -1,0 +1,12 @@
+[hosts:children]
+mirrorservers
+
+[mirrorservers:children]
+pkgmirror
+
+[pkgmirror]
+pkg01.example.org
+pkg02.example.org
+
+[local]
+localhost ansible_connection=local

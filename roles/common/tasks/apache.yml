@@ -1,0 +1,46 @@
+---
+# file: roles/common/task/repo.yml
+
+- name: be sure packages is prepared
+  apt: name={{ item }} state=latest
+  with_items:
+    - rsync
+    - apache2-mpm-event
+  tags:
+    - packages
+
+- name: be sure group is prepared
+  group: name={{ mirror_group }} gid={{ gid_number }} state=present
+  tags:
+    - group
+
+- name: be sure user is prepared
+  user: name={{ mirror_user }} uid={{ uid_number }} createhome=yes group={{ mirror_group }} state=present
+  tags:
+    - user
+
+- name: be sure /var/www/html directory is removed
+  file: path=/var/www/html state=absent
+  tags:
+    - apache
+
+- name: be sure servername is prepared
+  copy: src=servername.conf dest=/etc/apache2/conf-available/servername.conf owner=root group=root mode=0644
+  tags:
+    - apache
+  notify:
+    - reload apache
+
+- name: be sure servername is enabled
+  command: a2enconf servername
+  notify:
+    - reload apache
+  tags:
+    - apache
+
+- name: be sure apache is configured 
+  copy: src=000-default.conf dest=/etc/apache2/sites-available/000-default.conf
+  tags:
+    - apache
+  notify:
+    - reload apache

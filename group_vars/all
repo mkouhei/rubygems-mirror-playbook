@@ -1,0 +1,5 @@
+domain: example.org
+mirror_user: repo
+uid_number: 200
+mirror_group: repo
+gid_number: 200

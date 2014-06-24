@@ -1,0 +1,26 @@
+---
+
+- name: be sure rsync is installed
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - rsync
+  tags:
+    - rsync
+    - packages
+
+# configuration rsyncd
+- name: be sure default rsyncd is configured
+  copy: src={{ item }} dest=/etc/default/{{ item }} owner=root group=root mode=0644
+  with_items:
+    - rsync
+  tags:
+    - gems
+    - rsync
+
+# configuration rsyncd
+- name: be sure configured rsyncd
+  template: src=rsyncd.conf.j2 dest=/etc/rsyncd.conf owner=root group=root mode=0644
+  notify: restart rsync
+  tags:
+    - gems
+    - rsync

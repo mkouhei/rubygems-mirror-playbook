@@ -1,0 +1,10 @@
+---
+- name: reload apache
+  service: name=apache2 state=reloaded
+  tags:
+    - apache
+
+- name: restart rsync
+  service: name=rsync state=restarted
+  tags:
+    - rsync

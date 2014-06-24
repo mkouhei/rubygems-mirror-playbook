@@ -1,0 +1,10 @@
+# place this file as /etc/logrotate.d/gems-mirror
+
+/var/log/gems-mirror/mirror.log {
+        notifempty
+        daily
+        rotate 30
+        compress
+        missingok
+        create 0644 {{ mirror_user }} {{ mirror_group }}
+}

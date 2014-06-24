@@ -1,0 +1,4 @@
+---
+- include: rubygems.yml
+- include: rsync.yml
+- include: job.yml

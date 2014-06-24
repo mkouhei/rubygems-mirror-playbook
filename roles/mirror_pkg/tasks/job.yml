@@ -1,0 +1,19 @@
+---
+
+- name: mirror job RubyGems
+  cron: name="rubygems" user="{{ mirror_user }}" minute="10" hour="0" job="rake -f /usr/share/doc/rubygems-mirror/Rakefile mirror:update && /var/lib/gems-mirror/retrieve_meta.sh >> /var/log/gems-mirror/mirror.log"
+  when: ansible_nodename | search(".*01")
+  tags:
+    - gems
+    - cron
+
+# Gems retrieve from master (01) by slave (02)
+- name: master to slave
+  cron: name="gems master to slave" user="{{ mirror_user }}" minute="*/10" job="rsync -aqH --delete rsync://{{ item }}/rubygems/ /var/lib/gems-mirror/"
+  with_items:
+    - pkg01.{{ domain }}
+  when: ansible_nodename | search(".*02")
+  tags:
+    - gems
+    - cron
+    - slave

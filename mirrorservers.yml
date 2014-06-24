@@ -1,0 +1,8 @@
+---
+- hosts: pkgmirror
+  sudo: yes
+  roles:
+    - common
+    - mirror_pkg
+  tags:
+    - gems
